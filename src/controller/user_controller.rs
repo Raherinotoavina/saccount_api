@@ -24,10 +24,12 @@ pub async fn create_user(
 
     match res {
         Ok(user) => HttpResponse::Created().json(ResponseDTO {
-            status: "Ok".to_string(),
+            status: "Success".to_string(),
+            data: user.id,
         }),
         Err(error) => HttpResponse::BadRequest().json(ResponseDTO {
             status: "Error".to_string(),
+            data: error.to_string(),
         }),
     }
 }
