@@ -4,11 +4,9 @@ use validator::Validate;
 #[derive(Serialize, Deserialize, Debug, Validate)]
 pub struct CreateUserDTO {
     #[validate(email(message = "Adresse email invalide"))]
-    pub username: String,
+    pub email: String,
+    pub firstname: String,
 
-    #[validate(length(
-        min = 8,
-        message = "Le mot de passe doit contenir au moins 8 caractères"
-    ))]
-    pub password: String,
+    #[validate(length(min = 1))]
+    pub lastname: String,
 }

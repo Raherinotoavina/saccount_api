@@ -1,4 +1,4 @@
-use sea_orm_migration::{prelude::*, schema::*};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -6,16 +6,25 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        todo!();
-
         manager
             .create_table(
                 Table::create()
-                    .table(Post::Table)
+                    .table(User::Table)
                     .if_not_exists()
-                    .col(pk_auto(Post::Id))
-                    .col(string(Post::Title))
-                    .col(string(Post::Text))
+                    // Colonne id : clé primaire auto-incrémentée
+                    .col(
+                        ColumnDef::new(User::Id)
+                            .integer()
+                            .not_null()
+                            .auto_increment()
+                            .primary_key(),
+                    )
+                    // Colonne firstname : type Text, nullable
+                    .col(ColumnDef::new(User::Firstname).text().null())
+                    // Colonne lastname : type Text, nullable
+                    .col(ColumnDef::new(User::Lastname).text().null())
+                    // Colonne email : type Text, nullable, unique
+                    .col(ColumnDef::new(User::Email).text().null().unique_key())
                     .to_owned(),
             )
             .await
@@ -23,15 +32,16 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Post::Table).to_owned())
+            .drop_table(Table::drop().table(User::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Post {
+pub enum User {
     Table,
     Id,
-    Title,
-    Text,
+    Firstname,
+    Lastname,
+    Email,
 }

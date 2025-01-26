@@ -4,9 +4,10 @@ mod db;
 mod dto;
 mod entity;
 mod routes;
+mod service;
 
 use crate::routes::init_routes;
-use actix_web::{App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use config::Config;
 use db::establish_connection;
 use migration::{Migrator, MigratorTrait};
@@ -19,11 +20,16 @@ async fn main() -> std::io::Result<()> {
     let db = establish_connection(&config.database_url).await;
 
     // APPLY MIGRATIONS
-    Migrator::down(&db, None).await.unwrap();
+    Migrator::up(&db, None).await.unwrap();
 
     // APP SERVER
-    HttpServer::new(|| App::new().configure(init_routes))
-        .bind((config.url, config.port))?
-        .run()
-        .await
+    HttpServer::new(move || {
+        let db = db.clone();
+        App::new()
+            .app_data(web::Data::new(db))
+            .configure(init_routes)
+    })
+    .bind((config.url, config.port))?
+    .run()
+    .await
 }

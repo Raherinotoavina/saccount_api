@@ -8,6 +8,12 @@ pub struct Model {
 
     #[sea_orm(column_type = "Text", nullable)]
     pub firstname: String,
+
+    #[sea_orm(column_type = "Text", nullable)]
+    pub lastname: String,
+
+    #[sea_orm(column_type = "Text", nullable, unique)]
+    pub email: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
