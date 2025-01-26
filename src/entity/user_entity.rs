@@ -14,6 +14,9 @@ pub struct Model {
 
     #[sea_orm(column_type = "Text", nullable, unique)]
     pub email: String,
+
+    #[sea_orm(column_type = "Text", nullable)]
+    pub password: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

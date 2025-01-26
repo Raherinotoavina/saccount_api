@@ -5,6 +5,7 @@ mod dto;
 mod entity;
 mod routes;
 mod service;
+mod utils;
 
 use crate::routes::init_routes;
 use actix_web::{web, App, HttpServer};

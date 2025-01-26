@@ -22,9 +22,10 @@ impl MigrationTrait for Migration {
                     // Colonne firstname : type Text, nullable
                     .col(ColumnDef::new(User::Firstname).text().null())
                     // Colonne lastname : type Text, nullable
-                    .col(ColumnDef::new(User::Lastname).text().null())
+                    .col(ColumnDef::new(User::Lastname).text())
                     // Colonne email : type Text, nullable, unique
-                    .col(ColumnDef::new(User::Email).text().null().unique_key())
+                    .col(ColumnDef::new(User::Email).text().unique_key())
+                    .col(ColumnDef::new(User::Password).text().null())
                     .to_owned(),
             )
             .await
@@ -44,4 +45,5 @@ pub enum User {
     Firstname,
     Lastname,
     Email,
+    Password,
 }

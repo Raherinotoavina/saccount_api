@@ -1,5 +1,5 @@
-use crate::dto::response_dto::ResponseDTO;
-use crate::dto::user_dto::CreateUserDTO;
+use crate::dto::response_dto::{ResponseDTO, ResponseStatus};
+use crate::dto::user_dto::{CreateUserDTO, UserDTO};
 use crate::service::user_service::create_user_service;
 use actix_web::{get, post, web, HttpResponse, Responder};
 use sea_orm::DatabaseConnection;
@@ -17,18 +17,24 @@ pub async fn create_user(
     db: web::Data<DatabaseConnection>,
 ) -> impl Responder {
     if let Err(errors) = req_body.validate() {
-        return HttpResponse::BadRequest().json(errors);
+        return HttpResponse::UnprocessableEntity().json(ResponseDTO {
+            status: ResponseStatus::Error,
+            data: errors,
+        });
     }
 
-    let res = create_user_service(db.get_ref(), req_body).await;
-
-    match res {
+    match create_user_service(db.get_ref(), req_body).await {
         Ok(user) => HttpResponse::Created().json(ResponseDTO {
-            status: "Success".to_string(),
-            data: user.id,
+            status: ResponseStatus::Success,
+            data: UserDTO {
+                id: user.id,
+                lastname: user.lastname,
+                email: user.email,
+                firstname: user.firstname,
+            },
         }),
         Err(error) => HttpResponse::BadRequest().json(ResponseDTO {
-            status: "Error".to_string(),
+            status: ResponseStatus::Error,
             data: error.to_string(),
         }),
     }
